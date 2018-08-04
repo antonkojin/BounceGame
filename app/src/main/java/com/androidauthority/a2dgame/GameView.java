@@ -7,10 +7,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 
-/**
- * Created by rushd on 7/5/2017.
- */
-
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread thread;
     private CharacterSprite characterSprite;
@@ -18,9 +14,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public GameView(Context context) {
         super(context);
 
-        getHolder().addCallback(this);
+        final SurfaceHolder surfaceHolder = getHolder();
+        surfaceHolder.addCallback(this);
 
-        thread = new MainThread(getHolder(), this);
+        // TODO where to istantiate the MainThread? mh, mhh
+        thread = new MainThread(surfaceHolder, this);
+        // TODO the surfaceHolder belongs to me GameView, never geve it up!
 
         setFocusable(true);
 
@@ -28,13 +27,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        // what is happaning to the surface size? some logs please ...
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-
+    public boolean onTouchEvent(MotionEvent event) {
+        // TODO good it's here, for later
+        // TODO some logs please
         return super.onTouchEvent(event);
     }
 
@@ -43,7 +42,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(),R.drawable.avdgreen));
 
-
+        // TODO here we are starting the MainThread
         thread.setRunning(true);
         thread.start();
 
@@ -51,6 +50,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        // TODO why doin' it here, why doin' it?
+        // mhh, maybe when the surface isn't here there's no reason to run u.u
         boolean retry = true;
         while (retry) {
             try {
@@ -65,6 +66,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
+        // TODO move to MainThread, reponsability, this draws
         characterSprite.update();
 
     }

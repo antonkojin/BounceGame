@@ -4,10 +4,6 @@ package com.androidauthority.a2dgame;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
-/**
- * Created by rushd on 7/5/2017.
- */
-
 public class MainThread extends Thread {
     private GameView gameView;
     private SurfaceHolder surfaceHolder;
@@ -18,17 +14,21 @@ public class MainThread extends Thread {
 
 
     public MainThread(SurfaceHolder surfaceHolder, GameView gameView) {
-
-
         super();
         this.surfaceHolder = surfaceHolder;
         this.gameView = gameView;
-
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
+        // TODO responsability issue?
+        /*
+        this receves the surfaceHolder by GameView,
+        after telling GameView to update, tells GameView to draw but
+        passing the canvas which is obtained with the surfaceHolder.
+        maybe we are only managing time, but why not update and draw in the GameView?
+        Responsability
+         */
 
         long startTime;
         long timeMillis;
@@ -49,8 +49,9 @@ public class MainThread extends Thread {
                     this.gameView.draw(canvas);
                 }
             } catch (Exception e) {
+                // TODO wtf, oh java
             }
-            finally{
+            finally {
                 if(canvas!=null)
                 {
                     try {
