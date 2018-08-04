@@ -8,32 +8,39 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
 public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private final SurfaceHolder surfaceHolder;
     private Thread thread;
-    private CharacterSprite characterSprite;
+    private Character character;
+    private List<Villain> villains;
     private boolean running;
+    private long lastVillainTime;
+    private long villainDelta = 1500000000;
 
     public GameSurfaceViewRunnable(Context context) {
         super(context);
         setFocusable(true);
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-        characterSprite = new CharacterSprite(BitmapFactory.decodeResource(getResources(), R.drawable.avdgreen));
+        character = new Character();
+        villains = new LinkedList<>();
+        lastVillainTime = System.nanoTime();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        // TODO what is happaning to the surface size? some logs please ...
+        // TODO what is happening to the surface size? some logs please ...
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // TODO good it's here, for later
-        // TODO some logs please
-        return super.onTouchEvent(event);
+        character.moveTo((int) event.getX());
+        return true;
     }
-
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -63,7 +70,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
             endTime = System.nanoTime();
             deltaTime = endTime - startTime;
             waitTime = TARGET_TIME - deltaTime;
-            if (false || waitTime > 0) {
+            if (waitTime > 0) {
                 try {
                     Thread.sleep(waitTime / 1000000);
                 } catch (InterruptedException e) {
@@ -109,15 +116,25 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
     }
 
     public void update() {
-        characterSprite.update();
-
+        character.update();
+        for (Villain v: villains) {
+            v.update();
+        }
+        if (System.nanoTime() - lastVillainTime >= villainDelta) {
+            Villain v = new Villain();
+            villains.add(v);
+            lastVillainTime = System.nanoTime();
+        }
     }
 
     @Override
     public void draw(Canvas canvas) {
         if (canvas != null) {
             super.draw(canvas);
-            characterSprite.draw(canvas); // TODO too slow
+            character.draw(canvas);
+            for (Villain v: villains) {
+                v.draw(canvas);
+            }
         }
     }
 
