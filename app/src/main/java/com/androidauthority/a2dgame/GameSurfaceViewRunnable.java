@@ -57,19 +57,19 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         while (running) {
             startTime = System.nanoTime();
 
-            //update();
+            update();
             render();
 
             endTime = System.nanoTime();
             deltaTime = endTime - startTime;
             waitTime = TARGET_TIME - deltaTime;
-            /*if (false || waitTime > 0) {
+            if (false || waitTime > 0) {
                 try {
                     Thread.sleep(waitTime / 1000000);
                 } catch (InterruptedException e) {
                     Log.e("GameSurfaceView", "run: ", e);
                 }
-            }*/
+            }
 
             long frameTime = System.nanoTime() - startTime;
             totalTime += frameTime;
@@ -117,7 +117,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
     public void draw(Canvas canvas) {
         if (canvas != null) {
             super.draw(canvas);
-            characterSprite.draw(canvas);
+            characterSprite.draw(canvas); // TODO too slow
         }
     }
 
