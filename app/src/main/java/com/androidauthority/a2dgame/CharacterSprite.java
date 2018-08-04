@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class CharacterSprite {
 
