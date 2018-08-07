@@ -115,7 +115,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         }
     }
 
-    public void update() {
+    private void update() {
         character.update();
         for (Villain v: villains) {
             v.update();
