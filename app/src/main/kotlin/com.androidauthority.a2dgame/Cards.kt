@@ -1,5 +1,3 @@
-package com.androidauthority.a2dgame
-
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -8,18 +6,17 @@ import android.graphics.Canvas
 import android.graphics.Rect
 
 class Cards(private val context: Context) {
-    private val image: Bitmap = BitmapFactory.decodeResource(this.context.resources, R.drawable.card)
+    private val image: Bitmap
     var rectOne: Rect
     var rectTwo: Rect
-    private val screenWidth: Int
-    private val screenHeight: Int
 
 
     init {
+        this.image = BitmapFactory.decodeResource(this.context.resources, R.drawable.card)
         val imageHeight = this.image.height
         val imageWidth = this.image.width
-        screenHeight = Resources.getSystem().displayMetrics.heightPixels
-        screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
         val space = (screenWidth - 2 * imageWidth) / 3
         val rightOne = space + imageWidth
         val leftTwo = rightOne + space

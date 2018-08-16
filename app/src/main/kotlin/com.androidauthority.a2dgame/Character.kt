@@ -8,14 +8,18 @@ import android.graphics.Canvas
 import android.graphics.Rect
 
 class Character(private val context: Context) {
-    private val image: Bitmap = BitmapFactory.decodeResource(this.context.resources, R.drawable.hero)
+    private val image: Bitmap
     var rect: Rect
-    private val screenWidth: Int = Resources.getSystem().displayMetrics.widthPixels
-    private val screenHeight: Int = Resources.getSystem().displayMetrics.heightPixels
-    private var velocity = 20
+    private val screenWidth: Int
+    private val screenHeight: Int
+    private var velocity: Int
 
 
     init {
+        this.velocity = 0
+        this.image = BitmapFactory.decodeResource(this.context.resources, R.drawable.hero)
+        this.screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        this.screenHeight = Resources.getSystem().displayMetrics.heightPixels
         val imageHeight = image.height
         val imageWidth = image.width
         val bottom = screenHeight - 200
@@ -32,19 +36,8 @@ class Character(private val context: Context) {
     fun update() {
         // Log.d("", "character x: " + rect.centerX() + " y:  " + rect.centerY());
         // TODO get a reference to the World? has see things to interact with
-    }
-
-    fun moveTo(x: Int) {
-        var left = rect.left
-        var right = rect.right
-        val error = 10
-        if (x > rect.centerX() + error) {
-            left = rect.left + velocity
-            right = rect.right + velocity
-        } else if (x < rect.centerX() - error) {
-            left = rect.left - velocity
-            right = rect.right - velocity
-        }
+        var left = rect.left + velocity
+        var right = rect.right + velocity
         if (rect.left < 0) {
             left = 0
             right = left + rect.width()
@@ -54,6 +47,17 @@ class Character(private val context: Context) {
             left = right - rect.width()
         }
         rect.set(left, rect.top, right, rect.bottom)
+    }
+
+    fun moveTo(x: Int) {
+        val error = 100
+        if (x > rect.centerX() - error && x < rect.centerX() + error) {
+            velocity = 0;
+        } else if (x > rect.centerX()) {
+            velocity = 20
+        } else if (x < rect.centerX()) {
+            velocity = -20
+        }
     }
 }
 

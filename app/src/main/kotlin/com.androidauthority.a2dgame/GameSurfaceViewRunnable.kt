@@ -1,5 +1,3 @@
-package com.androidauthority.a2dgame
-
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
@@ -9,6 +7,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
 import android.view.SurfaceHolder
+import java.lang.System.nanoTime
 
 import java.util.LinkedList
 
@@ -16,13 +15,14 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
     private val surfaceHolder: SurfaceHolder
     private var thread: Thread? = null
     private val character: Character
-    private val villains: MutableList<Villain>
-    private var cards: Cards? = null
+    private val points: MutableList<Point>
+    private var cards: Cards?
+    private var pause: Boolean = true
     private var running: Boolean = false
-    private var lastVillainTime: Long = 0
+    private var lastPointTime: Long = 0
     private val second = 1e9
-    private val villainDelta = second * 1.5
-    private var points: Double = 0.toDouble()
+    private val pointDelta = second * 1.5
+    private var pointsCount: Double = 0.toDouble()
     private var cardsPointsThreshold: Double = 0.toDouble()
 
     init {
@@ -30,10 +30,10 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
         surfaceHolder = holder
         surfaceHolder.addCallback(this)
         character = Character(context)
-        villains = LinkedList()
-        lastVillainTime = System.nanoTime()
+        points = LinkedList()
+        lastPointTime = nanoTime()
         cards = null
-        points = 0.0
+        pointsCount = 0.0
         cardsPointsThreshold = 10.0
     }
 
@@ -44,8 +44,12 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (cards == null) {
-            character.moveTo(event.x.toInt())
-        } else {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) pause = false
+            else if (event.getAction() == MotionEvent.ACTION_UP) pause = true
+            if (!pause) {
+                character.moveTo(event.x.toInt())
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
             val x = event.x.toInt()
             val y = event.y.toInt()
             if (cards!!.rectOne.contains(x, y)) {
@@ -79,14 +83,14 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
         val targetTime = (1000000000 / targetFPS).toLong()
 
         while (running) {
-            startTime = System.nanoTime()
+            startTime = nanoTime()
 
-            if (this.cards == null) {
+            if (!pause) {
                 update()
             }
             render()
 
-            endTime = System.nanoTime()
+            endTime = nanoTime()
             deltaTime = endTime - startTime
             waitTime = targetTime - deltaTime
             if (waitTime > 0) {
@@ -98,7 +102,7 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
 
             }
 
-            val frameTime = System.nanoTime() - startTime
+            val frameTime = nanoTime() - startTime
             totalTime += frameTime
             frameCount++
             if (totalTime >= 1e9) {
@@ -136,35 +140,36 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
     }
 
     private fun update() {
-        // villains contacts
-        val villainsToRemove = LinkedList<Villain>()
-        for (v in villains) {
+        // points contacts
+        val pointsToRemove = LinkedList<Point>()
+        for (v in points) {
             if (Rect.intersects(v.rect, character.rect)) {
-                villainsToRemove.add(v)
-                this.points++
-                Log.i("", "points: " + this.points)
+                pointsToRemove.add(v)
+                this.pointsCount++
+                Log.i("", "pointsCount: " + this.pointsCount)
             }
             if (v.rect.top >= Resources.getSystem().displayMetrics.heightPixels) {
-                villainsToRemove.add(v)
+                pointsToRemove.add(v)
                 Log.i("", "enemy out of bottom bounds")
             }
         }
-        villains.removeAll(villainsToRemove)
+        points.removeAll(pointsToRemove)
 
-        // update character and villains
+        // update character and points
         character.update()
-        villains.forEach {it.update()}
+        points.forEach { it.update() }
 
-        // spawn villain
-        if (System.nanoTime() - lastVillainTime >= villainDelta) {
-            val v = Villain(context)
-            villains.add(v)
-            lastVillainTime = System.nanoTime()
+        // spawn point
+        if (nanoTime() - lastPointTime >= pointDelta) {
+            val v = Point(context)
+            points.add(v)
+            lastPointTime = nanoTime()
         }
 
         // spawn cards
-        if (points >= cardsPointsThreshold) {
+        if (pointsCount >= cardsPointsThreshold) {
             this.cards = Cards(context)
+            this.pause = true
         }
     }
 
@@ -172,7 +177,7 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
         if (canvas != null) {
             super.draw(canvas)
             character.draw(canvas)
-            for (v in villains) {
+            for (v in points) {
                 v.draw(canvas)
             }
             if (cards != null) {

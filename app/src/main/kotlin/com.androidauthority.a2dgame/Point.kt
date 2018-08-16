@@ -5,23 +5,22 @@ import android.content.res.Resources
 import android.graphics.*
 import java.util.*
 
-class Villain(private val context: Context) {
-    private val image: Bitmap = BitmapFactory.decodeResource(this.context.resources, R.drawable.enemy)
+class Point(private val context: Context) {
+    private val image: Bitmap
     var rect: Rect
-    private val screenWidth: Int
-    private val screenHeight: Int
     private val velocity: Int
 
 
     init {
+        this.image = BitmapFactory.decodeResource(this.context.resources, R.drawable.money)
         val imageHeight = this.image.height
         val imageWidth = this.image.width
         val r = Random()
-        screenHeight = Resources.getSystem().displayMetrics.heightPixels
-        screenWidth = Resources.getSystem().displayMetrics.widthPixels
-        velocity = r.nextInt(10) + 3
+        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        this.velocity = r.nextInt(10) + 3
         val bounds = 50
-        val left = r.nextInt(screenWidth - imageWidth - 2 * bounds) + bounds
+        val left = r.nextInt(screenWidth - imageWidth - (2 * bounds)) + bounds
         val right = left + imageWidth
         val bottom = 0
         val top = bottom - imageHeight
@@ -29,11 +28,11 @@ class Villain(private val context: Context) {
     }
 
     fun draw(canvas: Canvas) {
-        // canvas.drawBitmap(image, rect.left, rect.top, null);
-        val p = Paint()
-        p.style = Paint.Style.FILL_AND_STROKE
-        p.color = Color.RED
-        canvas.drawRect(this.rect, p)
+        canvas.drawBitmap(image, rect.left.toFloat(), rect.top.toFloat(), null);
+//        val p = Paint()
+//        p.style = Paint.Style.FILL_AND_STROKE
+//        p.color = Color.RED
+//        canvas.drawRect(this.rect, p)
     }
 
     fun update() {
