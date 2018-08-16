@@ -1,6 +1,9 @@
 package com.androidauthority.a2dgame;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,38 +15,37 @@ import java.util.Random;
 
 public class Villain {
 
-    private Rect rect;
+    private final Context context;
+    private final Bitmap image;
+    public Rect rect;
     private int screenWidth;
     private int screenHeight;
-    private Paint paint;
     private int velocity;
-    private final int size;
-    private final int halfSize;
 
 
-    public Villain() {
+    public Villain(Context context) {
+        this.context = context;
+        this.image = BitmapFactory.decodeResource(this.context.getResources(), R.drawable.enemy);
+        int imageHeight = this.image.getHeight();
+        int imageWidth = this.image.getWidth();
         Random r = new Random();
         screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        velocity = r.nextInt(10);
-        size = r.nextInt(200) + 100;
-        halfSize = size / 2;
-        int leftBound = halfSize + 10;
-        int rightBound = screenWidth - 10 - halfSize;
-        int x = r.nextInt(rightBound - leftBound + 1) + leftBound;
-        int y = -halfSize;
-        int left = x - halfSize;
-        int top = y - halfSize;
-        int right = x + halfSize;
-        int bottom = y + halfSize;
-        rect = new Rect(left, top, right, bottom);
-        paint = new Paint();
-        paint.setColor(Color.RED);
-        Log.i("", "Villain size:" + size + " x: " + x + " vel: " + velocity);
+        velocity = r.nextInt(10) + 3;
+        int bounds = 50;
+        int left = r.nextInt(screenWidth - imageWidth - 2*bounds) + bounds;
+        int right = left + imageWidth;
+        int bottom = 0;
+        int top = bottom - imageHeight;
+        this.rect = new Rect(left, top, right, bottom);
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawRect(rect, paint);
+        // canvas.drawBitmap(image, rect.left, rect.top, null);
+        Paint p = new Paint();
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        p.setColor(Color.RED);
+        canvas.drawRect(this.rect, p);
     }
 
     public void update() {
