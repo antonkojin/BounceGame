@@ -158,7 +158,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         }
 
         // points contacts
-        List pointsToRemove = new LinkedList<Point>();
+        List<Point> pointsToRemove = new LinkedList<Point>();
         for (Point v : points) {
             if (Rect.intersects(v.rect, character.rect)) {
                 pointsToRemove.add(v);
