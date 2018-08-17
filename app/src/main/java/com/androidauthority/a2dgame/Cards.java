@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Cards {
@@ -33,7 +35,12 @@ public class Cards {
 
     public void draw(Canvas canvas) {
         canvas.drawBitmap(image, rectOne.left, rectOne.top, null);
+        Paint p = new Paint();
+        p.setTextSize(100);
+        p.setColor(Color.WHITE);
+        canvas.drawText("speed up", rectOne.left + 50, rectOne.centerY() + 50, p);
         canvas.drawBitmap(image, rectTwo.left, rectTwo.top, null);
+        canvas.drawText("speed down", rectTwo.left + 10, rectTwo.centerY() + 50, p);
     }
 }
 

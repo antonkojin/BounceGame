@@ -17,8 +17,8 @@ public class Character {
 
 
     Character(Context context) {
-        this.velocity = 0;
         this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.hero);
+        this.velocity = 0;
         this.screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         int imageHeight = image.getHeight();

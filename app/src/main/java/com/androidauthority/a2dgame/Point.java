@@ -12,6 +12,8 @@ import java.util.Random;
 public class Point {
 
     private final Bitmap image;
+    static int maxVelocity = 15;
+    static int minVelocity = 5;
     public Rect rect;
     private int velocity;
 
@@ -22,7 +24,7 @@ public class Point {
         int imageWidth = this.image.getWidth();
         Random r = new Random();
         int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        this.velocity = r.nextInt(10) + 3;
+        this.velocity = r.nextInt(maxVelocity - minVelocity) + minVelocity;
         int bounds = 50;
         int left = r.nextInt(screenWidth - imageWidth - (2 * bounds)) + bounds;
         int right = left + imageWidth;

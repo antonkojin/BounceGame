@@ -40,7 +40,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         lastPointTime = nanoTime();
         cards = null;
         pointsCount = 0;
-        cardsPointsThreshold = 10;
+        cardsPointsThreshold = 1;
         hud = new Hud(this);
     }
 
@@ -63,12 +63,16 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
             int y = (int) event.getY();
             if (cards.rectOne.contains(x, y)) {
                 Log.i("", "Card one");
+                Point.maxVelocity = Point.maxVelocity * 2;
+                Point.minVelocity = Point.minVelocity * 2;
                 cards = null;
-                cardsPointsThreshold *= 1.5;
+                cardsPointsThreshold *= 2;
             } else if (cards.rectTwo.contains(x, y)) {
                 Log.i("", "Card two");
+                Point.maxVelocity = Point.maxVelocity / 2;
+                Point.minVelocity = Point.minVelocity / 2;
                 cards = null;
-                cardsPointsThreshold *= 1.5;
+                cardsPointsThreshold *= 2;
             }
         }
         return true;
@@ -77,6 +81,13 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d("", "surfaceCreated: ");
+        // setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        /*setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+            }
+        });*/
         thread = new Thread(this);
         this.running = true;
         thread.start();
@@ -152,7 +163,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
 
     private void update() {
         // spawn cards
-        if (pointsCount >= cardsPointsThreshold) {
+        if ((int) pointsCount >= (int) cardsPointsThreshold) {
             this.cards = new Cards(getContext());
             this.pause = true;
         }
@@ -163,11 +174,9 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
             if (Rect.intersects(v.rect, character.rect)) {
                 pointsToRemove.add(v);
                 this.pointsCount++;
-                Log.i("", "pointsCount: " + this.pointsCount);
             }
             if (v.rect.top >= Resources.getSystem().getDisplayMetrics().heightPixels) {
                 pointsToRemove.add(v);
-                Log.i("", "enemy out of bottom bounds");
             }
         }
         points.removeAll(pointsToRemove);

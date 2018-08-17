@@ -12,7 +12,7 @@ class Hud {
     }
 
     public void draw(Canvas canvas) {
-        String s = "" + game.pointsCount + "/" + game.cardsPointsThreshold;
+        String s = "" + ((int) game.pointsCount) + "/" + ((int) game.cardsPointsThreshold);
         Paint p = new Paint();
         float x = 0f;
         float y = 100f;
