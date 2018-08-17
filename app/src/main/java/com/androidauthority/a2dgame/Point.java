@@ -12,14 +12,12 @@ import java.util.Random;
 public class Point {
 
     private final Bitmap image;
-    private final Context context;
     public Rect rect;
     private int velocity;
 
 
-    public Point(Context context) {
-        this.context = context;
-        this.image = BitmapFactory.decodeResource(this.context.getResources(), R.drawable.money);
+    Point(Context context) {
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.money);
         int imageHeight = this.image.getHeight();
         int imageWidth = this.image.getWidth();
         Random r = new Random();

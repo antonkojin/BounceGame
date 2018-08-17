@@ -16,8 +16,8 @@ import java.util.List;
 import static java.lang.System.nanoTime;
 
 public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolder.Callback, Runnable {
-    public double pointsCount = 0.;
-    public double cardsPointsThreshold = 0.;
+    public double pointsCount;
+    public double cardsPointsThreshold;
     private Character character;
     private SurfaceHolder surfaceHolder;
     private Cards cards;
@@ -26,7 +26,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
     private Hud hud;
     private boolean pause = true;
     private boolean running = false;
-    private long lastPointTime = 0;
+    private long lastPointTime;
     private double second = 1e9;
     private double pointDelta = second * 1.5;
 
@@ -36,7 +36,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
         character = new Character(context);
-        points = new LinkedList<Point>();
+        points = new LinkedList<>();
         lastPointTime = nanoTime();
         cards = null;
         pointsCount = 0;
@@ -158,7 +158,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         }
 
         // points contacts
-        List<Point> pointsToRemove = new LinkedList<Point>();
+        List<Point> pointsToRemove = new LinkedList<>();
         for (Point v : points) {
             if (Rect.intersects(v.rect, character.rect)) {
                 pointsToRemove.add(v);

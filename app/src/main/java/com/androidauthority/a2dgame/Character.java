@@ -9,21 +9,18 @@ import android.graphics.Rect;
 
 public class Character {
 
-    private final Context context;
     private Bitmap image;
     public Rect rect;
     private int screenWidth;
-    private int screenHeight;
-    int velocity;
-    int toX;
+    private int velocity;
+    private int toX;
 
 
-    public Character(Context context) {
-        this.context = context;
+    Character(Context context) {
         this.velocity = 0;
-        this.image = BitmapFactory.decodeResource(this.context.getResources(), R.drawable.hero);
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.hero);
         this.screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        this.screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         int imageHeight = image.getHeight();
         int imageWidth = image.getWidth();
         int bottom = screenHeight - 200;

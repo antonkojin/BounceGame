@@ -7,7 +7,7 @@ import android.graphics.Paint;
 class Hud {
     private GameSurfaceViewRunnable game;
 
-    public Hud(GameSurfaceViewRunnable game) {
+    Hud(GameSurfaceViewRunnable game) {
         this.game = game;
     }
 
