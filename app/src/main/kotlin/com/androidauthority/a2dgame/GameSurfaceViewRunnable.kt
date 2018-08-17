@@ -1,3 +1,5 @@
+package com.androidauthority.a2dgame
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
@@ -17,13 +19,14 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
     private val character: Character
     private val points: MutableList<Point>
     private var cards: Cards?
+    private var hud = Hud(context, this)
     private var pause: Boolean = true
     private var running: Boolean = false
     private var lastPointTime: Long = 0
     private val second = 1e9
     private val pointDelta = second * 1.5
-    private var pointsCount: Double = 0.toDouble()
-    private var cardsPointsThreshold: Double = 0.toDouble()
+    public var pointsCount: Double = 0.toDouble()
+    public var cardsPointsThreshold: Double = 0.toDouble()
 
     init {
         isFocusable = true
@@ -140,6 +143,12 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
     }
 
     private fun update() {
+        // spawn cards
+        if (pointsCount >= cardsPointsThreshold) {
+            this.cards = Cards(context)
+            this.pause = true
+        }
+
         // points contacts
         val pointsToRemove = LinkedList<Point>()
         for (v in points) {
@@ -165,12 +174,6 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
             points.add(v)
             lastPointTime = nanoTime()
         }
-
-        // spawn cards
-        if (pointsCount >= cardsPointsThreshold) {
-            this.cards = Cards(context)
-            this.pause = true
-        }
     }
 
     override fun draw(canvas: Canvas?) {
@@ -183,6 +186,7 @@ class GameSurfaceViewRunnable(context: Context) : SurfaceView(context), SurfaceH
             if (cards != null) {
                 cards!!.draw(canvas)
             }
+            hud.draw(canvas)
         }
     }
 

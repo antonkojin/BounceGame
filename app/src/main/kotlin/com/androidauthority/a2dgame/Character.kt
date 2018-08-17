@@ -13,6 +13,7 @@ class Character(private val context: Context) {
     private val screenWidth: Int
     private val screenHeight: Int
     private var velocity: Int
+    private var toX: Int
 
 
     init {
@@ -27,6 +28,7 @@ class Character(private val context: Context) {
         val left = screenWidth / 2 - imageWidth / 2
         val right = left + imageWidth
         this.rect = Rect(left, top, right, bottom)
+        this.toX = this.rect.centerX()
     }
 
     fun draw(canvas: Canvas) {
@@ -36,6 +38,13 @@ class Character(private val context: Context) {
     fun update() {
         // Log.d("", "character x: " + rect.centerX() + " y:  " + rect.centerY());
         // TODO get a reference to the World? has see things to interact with
+
+        // set velocity to reach x
+        val maxVelocity = 20
+        velocity = (toX - rect.centerX()) / 10
+        if (velocity > maxVelocity) velocity = maxVelocity
+        else if (velocity < -maxVelocity) velocity = -maxVelocity
+
         var left = rect.left + velocity
         var right = rect.right + velocity
         if (rect.left < 0) {
@@ -47,17 +56,11 @@ class Character(private val context: Context) {
             left = right - rect.width()
         }
         rect.set(left, rect.top, right, rect.bottom)
+
     }
 
     fun moveTo(x: Int) {
-        val error = 100
-        if (x > rect.centerX() - error && x < rect.centerX() + error) {
-            velocity = 0;
-        } else if (x > rect.centerX()) {
-            velocity = 20
-        } else if (x < rect.centerX()) {
-            velocity = -20
-        }
+        this.toX = x
     }
 }
 

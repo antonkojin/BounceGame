@@ -28,7 +28,7 @@ class Point(private val context: Context) {
     }
 
     fun draw(canvas: Canvas) {
-        canvas.drawBitmap(image, rect.left.toFloat(), rect.top.toFloat(), null);
+        canvas.drawBitmap(image, rect.left.toFloat(), rect.top.toFloat(), null)
 //        val p = Paint()
 //        p.style = Paint.Style.FILL_AND_STROKE
 //        p.color = Color.RED
