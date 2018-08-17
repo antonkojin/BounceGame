@@ -1,46 +1,47 @@
 package com.androidauthority.a2dgame;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+
+import static java.lang.System.nanoTime;
 
 public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolder.Callback, Runnable {
-    private final SurfaceHolder surfaceHolder;
-    private Thread thread;
+    public double pointsCount = 0.;
+    public double cardsPointsThreshold = 0.;
     private Character character;
-    private List<Villain> villains;
+    private SurfaceHolder surfaceHolder;
     private Cards cards;
-    private boolean running;
-    private long lastVillainTime;
-    private final double second = 1e9;
-    private double villainDelta = second * 1.5;
-    private Context context;
-    private double points;
-    private double cardsPointsThreshold;
+    private Thread thread = null;
+    private List<Point> points;
+    private Hud hud;
+    private boolean pause = true;
+    private boolean running = false;
+    private long lastPointTime = 0;
+    private double second = 1e9;
+    private double pointDelta = second * 1.5;
 
     public GameSurfaceViewRunnable(Context context) {
         super(context);
-        this.context = context;
         setFocusable(true);
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
         character = new Character(context);
-        villains = new LinkedList<>();
-        lastVillainTime = System.nanoTime();
+        points = new LinkedList<Point>();
+        lastPointTime = nanoTime();
         cards = null;
-        points = 0;
+        pointsCount = 0;
         cardsPointsThreshold = 10;
+        hud = new Hud(this);
     }
 
     @Override
@@ -49,10 +50,15 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
         if (cards == null) {
-            character.moveTo((int) event.getX());
-        } else {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) pause = false;
+            else if (event.getAction() == MotionEvent.ACTION_UP) pause = true;
+            if (!pause) {
+                character.moveTo((int) event.getX());
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
             int x = (int) event.getX();
             int y = (int) event.getY();
             if (cards.rectOne.contains(x, y)) {
@@ -83,34 +89,35 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         long deltaTime;
         long waitTime;
         long totalTime = 0;
-        int frameCount = 0;
-        final int TARGET_FPS = 60;
-        final long TARGET_TIME = 1000000000 / TARGET_FPS;
+        long frameCount = 0;
+        long targetFPS = 60;
+        long targetTime = (1000000000 / targetFPS);
 
         while (running) {
-            startTime = System.nanoTime();
+            startTime = nanoTime();
 
-            if (this.cards == null) {
+            if (!pause) {
                 update();
             }
             render();
 
-            endTime = System.nanoTime();
+            endTime = nanoTime();
             deltaTime = endTime - startTime;
-            waitTime = TARGET_TIME - deltaTime;
+            waitTime = targetTime - deltaTime;
             if (waitTime > 0) {
                 try {
                     Thread.sleep(waitTime / 1000000);
                 } catch (InterruptedException e) {
                     Log.e("GameSurfaceView", "run: ", e);
                 }
+
             }
 
-            long frameTime = System.nanoTime() - startTime;
+            long frameTime = nanoTime() - startTime;
             totalTime += frameTime;
             frameCount++;
             if (totalTime >= 1e9) {
-                int realFPS = frameCount;
+                long realFPS = frameCount;
                 Log.d("", "FPS: " + realFPS);
                 frameCount = 0;
                 totalTime = 0;
@@ -144,37 +151,38 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
     }
 
     private void update() {
-        // villains contacts
-        List<Villain> villainsToRemove = new LinkedList<Villain>();
-        for(Villain v: villains) {
-            if(Rect.intersects(v.rect, character.rect)) {
-                villainsToRemove.add(v);
-                this.points++;
-                Log.i("", "points: " + this.points);
+        // spawn cards
+        if (pointsCount >= cardsPointsThreshold) {
+            this.cards = new Cards(getContext());
+            this.pause = true;
+        }
+
+        // points contacts
+        List pointsToRemove = new LinkedList<Point>();
+        for (Point v : points) {
+            if (Rect.intersects(v.rect, character.rect)) {
+                pointsToRemove.add(v);
+                this.pointsCount++;
+                Log.i("", "pointsCount: " + this.pointsCount);
             }
-            if(v.rect.top >= Resources.getSystem().getDisplayMetrics().heightPixels) {
-                villainsToRemove.add(v);
+            if (v.rect.top >= Resources.getSystem().getDisplayMetrics().heightPixels) {
+                pointsToRemove.add(v);
                 Log.i("", "enemy out of bottom bounds");
             }
         }
-        villains.removeAll(villainsToRemove);
+        points.removeAll(pointsToRemove);
 
-        // update character and villains
+        // update character and points
         character.update();
-        for (Villain v: villains) {
-            v.update();
+        for (Point p : points) {
+            p.update();
         }
 
-        // spawn villain
-        if (System.nanoTime() - lastVillainTime >= villainDelta) {
-            Villain v = new Villain(context);
-            villains.add(v);
-            lastVillainTime = System.nanoTime();
-        }
-
-        // spawn cards
-        if (points >= cardsPointsThreshold) {
-            this.cards = new Cards(context);
+        // spawn point
+        if (nanoTime() - lastPointTime >= pointDelta) {
+            Point v = new Point(getContext());
+            points.add(v);
+            lastPointTime = nanoTime();
         }
     }
 
@@ -183,12 +191,13 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
         if(canvas != null) {
             super.draw(canvas);
             character.draw(canvas);
-            for (Villain v : villains) {
+            for (Point v : points) {
                 v.draw(canvas);
             }
             if (cards != null) {
                 cards.draw(canvas);
             }
+            hud.draw(canvas);
         }
     }
 
