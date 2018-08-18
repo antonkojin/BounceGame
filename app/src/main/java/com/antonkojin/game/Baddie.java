@@ -1,4 +1,4 @@
-package com.androidauthority.a2dgame;
+package com.antonkojin.game;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -9,7 +9,7 @@ import android.graphics.Rect;
 
 import java.util.Random;
 
-public class Point {
+public class Baddie {
 
     private final Bitmap image;
     static int maxVelocity = 15;
@@ -18,8 +18,8 @@ public class Point {
     private int velocity;
 
 
-    Point(Context context) {
-        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.money);
+    Baddie(Context context) {
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy);
         int imageHeight = this.image.getHeight();
         int imageWidth = this.image.getWidth();
         Random r = new Random();
@@ -35,13 +35,6 @@ public class Point {
 
     public void draw(Canvas canvas) {
         canvas.drawBitmap(image, rect.left, rect.top, null);
-
-/*
-        Paint p = new Paint();
-        p.setStyle(Paint.Style.FILL_AND_STROKE);
-        p.setColor(Color.RED);
-        canvas.drawRect(this.rect, p);
-*/
     }
 
     public void update() {

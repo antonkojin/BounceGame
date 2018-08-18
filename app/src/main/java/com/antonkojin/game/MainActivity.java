@@ -1,4 +1,4 @@
-package com.androidauthority.a2dgame;
+package com.antonkojin.game;
 
 import android.app.Activity;
 import android.os.Bundle;
