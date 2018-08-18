@@ -15,7 +15,7 @@ public class Baddie {
     static int maxVelocity = 15;
     static int minVelocity = 5;
     public Rect rect;
-    private int velocity;
+    private int gravity;
 
 
     Baddie(Context context) {
@@ -24,7 +24,8 @@ public class Baddie {
         int imageWidth = this.image.getWidth();
         Random r = new Random();
         int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        this.velocity = r.nextInt(maxVelocity - minVelocity) + minVelocity;
+        // this.gravity = r.nextInt(maxVelocity - minVelocity) + minVelocity;
+        gravity = 20;
         int bounds = 50;
         int left = r.nextInt(screenWidth - imageWidth - (2 * bounds)) + bounds;
         int right = left + imageWidth;
@@ -38,8 +39,8 @@ public class Baddie {
     }
 
     public void update() {
-        int top = rect.top + velocity;
-        int bottom = rect.bottom + velocity;
+        int top = rect.top + gravity;
+        int bottom = rect.bottom + gravity;
         rect.set(rect.left, top, rect.right, bottom);
     }
 }

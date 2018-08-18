@@ -64,7 +64,9 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
     public boolean onTouchEvent(MotionEvent event) {
         if (cards == null) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) pause = false;
-            else if (event.getAction() == MotionEvent.ACTION_UP) pause = false; // TODO set true
+            else if (event.getAction() == MotionEvent.ACTION_UP) {
+                // pause = false; // TODO set true
+            }
             if (!pause) {
                 character.moveTo((int) event.getX());
             }
@@ -73,6 +75,7 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
             int y = (int) event.getY();
             if (cards.isSelected(x, y)) {
                 cards = null;
+                this.pause = false; // TODO remove here
                 this.cardsPointsThreshold *= cardsPointsThresholdMultiplier;
             }
         }
@@ -186,10 +189,17 @@ public class GameSurfaceViewRunnable extends SurfaceView implements SurfaceHolde
             }
         }
         baddies.removeAll(baddiesToRemove);
+
         // update everyone
         character.update();
-        for (Point p : points) p.update();
+        for (Point point : points) {
+            point.update();
+            if (character.magnet.contains(point.rect)) {
+                point.moveTo(character.magnet, character.rect);
+            }
+        }
         for (Baddie b : baddies) b.update();
+
         // spawn point
         if (nanoTime() - lastPointTime >= pointDelta) {
             Point v = new Point(getContext());
