@@ -8,9 +8,9 @@ import android.view.MotionEvent;
 
 @SuppressWarnings("WeakerAccess")
 public class Game {
-    static double second = 1e9;
+    static long second = 1_000_000_000;
     final Context context;
-    boolean pause = true;
+    boolean pause = false;
     double pointsCount = 0;
     Points points;
     Ants ants;
@@ -33,12 +33,25 @@ public class Game {
         worldBounds = new Rect(0, 0, screenWidth, screenHeight);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void touchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) pause = true;
-        if (!pause) {
-            character.moveToX = (int) event.getX();
-        } else if (pause && event.getAction() == MotionEvent.ACTION_DOWN) {
+        // Log.d("", "touchEvent: " + event);
+        final boolean actionDown = event.getAction() == MotionEvent.ACTION_DOWN;
+        final boolean actionUp = event.getAction() == MotionEvent.ACTION_UP;
+        final boolean actionPausePlay = actionDown
+                && hud.pausePlayRect.contains((int) event.getX(), (int) event.getY());
+        if (!pause && actionPausePlay) {
+            pause = true;
+        } else if (pause && actionPausePlay) {
+            pause = false;
+        } else if (pause && actionDown) {
             updates.select(((int) event.getX()), ((int) event.getY()));
+        } else if (!pause) {
+            if (actionUp) {
+                character.moveToX = character.rect.centerX();
+            } else {
+                character.moveToX = (int) event.getX();
+            }
         }
     }
 

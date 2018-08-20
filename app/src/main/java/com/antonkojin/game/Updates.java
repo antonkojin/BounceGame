@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +30,7 @@ class Updates {
 
     public void select(int x, int y) {
         for (Update u : updates) {
-            if (u.rect.contains(x, y)) {
+            if (u.rect.contains(x, y) && game.pointsCount >= u.price) {
                 u.apply();
             }
         }
@@ -40,7 +39,7 @@ class Updates {
     class Update {
         int ordinal;
         Rect rect;
-        double price = 0;
+        double price;
         private String description;
 
         Update(int ordinal, int length) {
@@ -48,16 +47,18 @@ class Updates {
             switch (ordinal) {
                 case 0:
                     description = "moreMoney";
+                    price = 1;
                     break;
                 case 1:
                     description = "lessBaddies";
+                    price = 10;
             }
             int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-            double spacing = screenHeight - (length * image.getHeight()) / ((length - 1) + 2);
-            int top = (int) (spacing + ((image.getHeight() + spacing) * ordinal));
-            int left = (int) spacing;
+            double verticalSpacing = (screenHeight - (length * image.getHeight())) / ((length - 1) + 2);
+            int top = (int) (verticalSpacing + ((image.getHeight() + verticalSpacing) * ordinal));
+            int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+            int left = (screenWidth - image.getWidth()) / 2;
             this.rect = new Rect(left, top, left + image.getWidth(), top + image.getHeight());
-            Log.i("", "Update x: " + rect.centerX() + " y: " + rect.centerY());
         }
 
         void apply() {
@@ -69,7 +70,8 @@ class Updates {
                     Ants.spawnDelta *= 1.1;
                     break;
             }
-            game.pause = false;
+            game.pointsCount -= price;
+            price *= 2;
         }
 
         void draw(Canvas canvas) {
@@ -77,9 +79,9 @@ class Updates {
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             paint.setTextSize(100);
-            canvas.drawText(this.description, rect.left + 20, rect.top + 20, paint);
-            canvas.drawText(String.valueOf(price), rect.right - 20, rect.top + 20, paint);
-            canvas.drawRect(rect, paint);
+            final int topOffset = 155;
+            final int leftOffset = 100;
+            canvas.drawText(this.description + "   " + (int) price, rect.left + leftOffset, rect.top + topOffset, paint);
         }
     }
 }

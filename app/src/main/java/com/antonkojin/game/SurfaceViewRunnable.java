@@ -67,7 +67,7 @@ public class SurfaceViewRunnable extends SurfaceView implements SurfaceHolder.Ca
             frameCount++;
             if (totalTime >= 1e9) {
                 long realFPS = frameCount;
-                Log.d("", "FPS: " + realFPS);
+                Log.d("", String.format("fps: %d, pointsSpawn %f, antsSpawn %f", realFPS, Points.spawnDelta / Game.second, Ants.spawnDelta / Game.second));
                 frameCount = 0;
                 totalTime = 0;
             }
