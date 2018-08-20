@@ -13,16 +13,16 @@ import android.graphics.Rect;
 public class Cards {
 
     private final Bitmap image;
-    public Rect rectOne;
-    public Rect rectTwo;
+    private final Game game;
+    Rect rectOne;
+    Rect rectTwo;
     private Function<Void, Void> cardOne;
     private Function<Void, Void> cardTwo;
     private String textOne, textTwo;
 
 
-
-
-    Cards(Context context) {
+    Cards(Context context, final Game game) {
+        this.game = game;
         this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.card);
         int imageHeight = this.image.getHeight();
         int imageWidth = this.image.getWidth();
@@ -43,7 +43,7 @@ public class Cards {
         this.cardOne = new Function<Void, Void>() {
             @Override
             public Void apply(Void input) {
-                GameSurfaceViewRunnable.pointDelta = GameSurfaceViewRunnable.pointDelta / 1.1;
+                game.pointDelta = game.pointDelta / 1.1;
                 return null;
             }
         };
@@ -51,7 +51,7 @@ public class Cards {
         this.cardTwo = new Function<Void, Void>() {
             @Override
             public Void apply(Void input) {
-                GameSurfaceViewRunnable.baddieDelta = GameSurfaceViewRunnable.baddieDelta * 1.1;
+                game.baddieDelta = game.baddieDelta * 1.1;
                 return null;
             }
         };

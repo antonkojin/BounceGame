@@ -5,9 +5,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 class Hud {
-    private GameSurfaceViewRunnable game;
+    private Game game;
 
-    Hud(GameSurfaceViewRunnable game) {
+    Hud(Game game) {
         this.game = game;
     }
 
