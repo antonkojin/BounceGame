@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 public class Game {
     static double second = 1e9;
     final Context context;
-    boolean pause = false;
+    boolean pause = true;
     double pointsCount = 0;
     Points points;
     Ants ants;
@@ -51,6 +51,7 @@ public class Game {
             character.draw(canvas);
             hud.draw(canvas);
         } else {
+            hud.draw(canvas);
             updates.draw(canvas);
         }
     }

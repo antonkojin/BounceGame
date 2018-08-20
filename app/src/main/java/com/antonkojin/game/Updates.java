@@ -79,6 +79,7 @@ class Updates {
             paint.setTextSize(100);
             canvas.drawText(this.description, rect.left + 20, rect.top + 20, paint);
             canvas.drawText(String.valueOf(price), rect.right - 20, rect.top + 20, paint);
+            canvas.drawRect(rect, paint);
         }
     }
 }
