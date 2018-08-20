@@ -9,7 +9,7 @@ import android.graphics.Rect;
 
 import java.util.Random;
 
-public class Baddie {
+public class Fireball {
 
     private final Bitmap image;
     static int maxVelocity = 15;
@@ -18,8 +18,8 @@ public class Baddie {
     private int gravity;
 
 
-    Baddie(Context context) {
-        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy);
+    Fireball(Context context) {
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.fireball);
         int imageHeight = this.image.getHeight();
         int imageWidth = this.image.getWidth();
         Random r = new Random();

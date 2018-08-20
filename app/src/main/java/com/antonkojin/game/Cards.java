@@ -51,7 +51,7 @@ public class Cards {
         this.cardTwo = new Function<Void, Void>() {
             @Override
             public Void apply(Void input) {
-                game.baddieDelta = game.baddieDelta * 1.1;
+                game.fireballDelta = game.fireballDelta * 1.1;
                 return null;
             }
         };

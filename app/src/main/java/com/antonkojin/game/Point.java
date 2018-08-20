@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
 
 import java.util.Random;
 
@@ -18,9 +17,11 @@ public class Point {
     private double gravity = 10;
     private double xVelocity = 0;
     private double maxXVelocity = 5;
+    private Game game;
 
 
-    Point(Context context) {
+    Point(Context context, Game game) {
+        this.game = game;
         this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.money);
         int imageHeight = this.image.getHeight();
         int imageWidth = this.image.getWidth();
@@ -40,10 +41,16 @@ public class Point {
     }
 
     public void update() {
-//        int top = (int) (rect.top + gravity);
-//        int bottom = (int) (rect.bottom + gravity);
-//        rect.set(rect.left, top, rect.right, bottom);
-        Log.i("", String.format("MoneyXVelocity:%s", xVelocity));
+        // character absorb
+        if (Rect.intersects(this.rect, game.character.rect)) {
+            game.points.remove(this);
+            game.pointsCount++;
+        }
+        // bottom out destroy
+        if (rect.top >= Resources.getSystem().getDisplayMetrics().heightPixels) {
+            game.points.remove(this);
+        }
+        // update position
         this.rect.offset((int) xVelocity, (int) gravity);
     }
 
