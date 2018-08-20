@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '28.0.1'
     defaultConfig {
-        applicationId "com.androidauthority.a2dgame"
+        applicationId "com.antonkojin.game"
         minSdkVersion 27
         targetSdkVersion 27
         versionCode 1
