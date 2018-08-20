@@ -85,6 +85,7 @@ public class Ants {
             if (rect.top >= game.worldBounds.bottom) {
                 dead = true;
             }
+            // TODO maybe fire???
             int dx = xVelocity;
             int dy = yVelocity;
             rect.offset(dx, dy);
