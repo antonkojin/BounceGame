@@ -15,19 +15,19 @@ public class Game {
     Points points;
     Ants ants;
     Character character;
-    Fireballs fireballs;
+//    Fireballs fireballs;
     Hud hud;
     Rect worldBounds;
-    Updates updates;
+    Upgrades upgrades;
 
     Game(Context context) {
         this.context = context;
         character = new Character(this);
         points = new Points(this);
-        fireballs = new Fireballs(this);
+//        fireballs = new Fireballs(this);
         ants = new Ants(this);
         hud = new Hud(this);
-        updates = new Updates(this);
+        upgrades = new Upgrades(this);
         final int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         final int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         worldBounds = new Rect(0, 0, screenWidth, screenHeight);
@@ -45,7 +45,7 @@ public class Game {
         } else if (pause && actionPausePlay) {
             pause = false;
         } else if (pause && actionDown) {
-            updates.select(((int) event.getX()), ((int) event.getY()));
+            upgrades.select(((int) event.getX()), ((int) event.getY()));
         } else if (!pause) {
             if (actionUp) {
                 character.moveToX = character.rect.centerX();
@@ -60,12 +60,12 @@ public class Game {
         if (!pause) {
             ants.draw(canvas);
             points.draw(canvas);
-            fireballs.draw(canvas);
+//            fireballs.draw(canvas);
             character.draw(canvas);
             hud.draw(canvas);
         } else {
             hud.draw(canvas);
-            updates.draw(canvas);
+            upgrades.draw(canvas);
         }
     }
 
@@ -73,7 +73,7 @@ public class Game {
         if (!pause) {
             character.update();
             points.update();
-            fireballs.update();
+//            fireballs.update();
             ants.update();
         }
     }

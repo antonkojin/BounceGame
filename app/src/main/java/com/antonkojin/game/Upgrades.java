@@ -11,17 +11,18 @@ import android.graphics.Rect;
 import java.util.LinkedList;
 import java.util.List;
 
-class Updates {
+class Upgrades {
     private static Bitmap image;
     Game game;
     List<Update> updates;
 
-    Updates(Game game) {
+    Upgrades(Game game) {
         image = BitmapFactory.decodeResource(game.context.getResources(), R.drawable.update);
         this.game = game;
         updates = new LinkedList<>();
-        updates.add(new Update(0, 2));
-        updates.add(new Update(1, 2));
+        updates.add(new Update(0, 3));
+        updates.add(new Update(1, 3));
+        updates.add(new Update(2, 3));
     }
 
     void draw(Canvas canvas) {
@@ -51,7 +52,11 @@ class Updates {
                     break;
                 case 1:
                     description = "lessBaddies";
-                    price = 10;
+                    price = 1;
+                    break;
+                case 2:
+                    description = "friends";
+                    price = 1;
             }
             int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
             double verticalSpacing = (screenHeight - (length * image.getHeight())) / ((length - 1) + 2);
@@ -69,6 +74,8 @@ class Updates {
                 case "lessBaddies":
                     Ants.spawnDelta *= 1.1;
                     break;
+                case "friends":
+                    game.character.addFriend();
             }
             game.pointsCount -= price;
             price *= 2;
