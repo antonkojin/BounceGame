@@ -6,36 +6,38 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
+import java.util.AbstractList;
+import java.util.LinkedList;
+import java.util.Random;
+
 @SuppressWarnings("WeakerAccess")
 public class Game {
     static long second = 1_000_000_000;
-    final Context context;
-    boolean pause = false;
-    double pointsCount = 0;
-    Points points;
-    Ants ants;
-    Character character;
-//    Fireballs fireballs;
-    Hud hud;
+
+    boolean pause = true;
+
     Rect worldBounds;
-    Upgrades upgrades;
+    Context context;
+    Character character;
+    AbstractList<Baddie> baddies;
+    Hud hud;
+    Menu menu;
+    Background background;
+    Sky sky;
 
     Game(Context context) {
         this.context = context;
+        this.worldBounds = new Rect(0, 0, Resources.getSystem().getDisplayMetrics().widthPixels, Resources.getSystem().getDisplayMetrics().heightPixels);
+        background = new Background(this);
+        sky = new Sky(this);
         character = new Character(this);
-        points = new Points(this);
-//        fireballs = new Fireballs(this);
-        ants = new Ants(this);
         hud = new Hud(this);
-        upgrades = new Upgrades(this);
-        final int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        final int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-        worldBounds = new Rect(0, 0, screenWidth, screenHeight);
+        menu = new Menu(this);
+        baddies = new LinkedList<>();
     }
 
     @SuppressWarnings("ConstantConditions")
     public void touchEvent(MotionEvent event) {
-        // Log.d("", "touchEvent: " + event);
         final boolean actionDown = event.getAction() == MotionEvent.ACTION_DOWN;
         final boolean actionUp = event.getAction() == MotionEvent.ACTION_UP;
         final boolean actionPausePlay = actionDown
@@ -45,12 +47,10 @@ public class Game {
         } else if (pause && actionPausePlay) {
             pause = false;
         } else if (pause && actionDown) {
-            upgrades.select(((int) event.getX()), ((int) event.getY()));
+            menu.select(((int) event.getX()), ((int) event.getY()));
         } else if (!pause) {
-            if (actionUp) {
-                character.moveToX = character.rect.centerX();
-            } else {
-                character.moveToX = (int) event.getX();
+            if (actionDown) {
+                character.boost();
             }
         }
     }
@@ -58,23 +58,78 @@ public class Game {
 
     public void render(Canvas canvas) {
         if (!pause) {
-            ants.draw(canvas);
-            points.draw(canvas);
-//            fireballs.draw(canvas);
+            background.draw(canvas);
+            for (Baddie b: baddies) b.draw(canvas);
             character.draw(canvas);
+            sky.draw(canvas);
             hud.draw(canvas);
         } else {
-            hud.draw(canvas);
-            upgrades.draw(canvas);
+            menu.draw(canvas);
         }
     }
 
     public void update() {
+        if (character.speed.x <= 0) {
+            gameOver();
+        }
         if (!pause) {
             character.update();
-            points.update();
-//            fireballs.update();
-            ants.update();
+            baddiesUpdate();
+            background.update();
+            sky.update();
+            spawnBaddies();
+
         }
+    }
+
+    private void baddiesUpdate() {
+        AbstractList<Baddie> baddiesToRemove = new LinkedList<>();
+        for (Baddie b: baddies) {
+            final boolean dead;
+            if (Rect.intersects(b.rect, character.rect)) {
+                dead = true;
+                character.points++;
+                character.speed.x += b.bounceXSpeedIncrease;
+                if (!character.skyFall) {
+                    character.bounce(b.rect.top, b.bounceYSpeed);
+                }
+            } else {
+                dead = b.update();
+            }
+            if (dead) baddiesToRemove.add(b);
+        }
+        baddies.removeAll(baddiesToRemove);
+    }
+
+    private void spawnBaddies() {
+        Random r = new Random();
+
+        double simpleBaddiesPerFrame = SimpleBaddie.spawnPerSpaceUnit * character.speed.x;
+        boolean spawnSimpleBaddie = r.nextDouble() <= simpleBaddiesPerFrame;
+        if (spawnSimpleBaddie) {
+            baddies.add(new SimpleBaddie(this));
+        }
+
+        double flyingBaddiesPerFrame = FlyingBaddie.spawnPerSpaceUnit * character.speed.x;
+        boolean spawnFlyingBaddie = r.nextDouble() <= flyingBaddiesPerFrame;
+        if (spawnFlyingBaddie) {
+            baddies.add(new FlyingBaddie(this));
+        }
+
+        double bombBaddiesPerFrame = BombBaddie.spawnPerSpaceUnit * character.speed.x;
+        boolean spawnBombBaddie = r.nextDouble() <= bombBaddiesPerFrame * character.speed.x;
+        if (spawnBombBaddie) {
+            baddies.add(new BombBaddie(this));
+        }
+    }
+
+    void gameOver() {
+        baddies.clear();
+        character.reset();
+        pause = true;
+    }
+
+    void gameStart() {
+        pause = false;
     }
 }

@@ -30,18 +30,21 @@ class Hud {
     }
 
     public void draw(Canvas canvas) {
-        String s = "" + ((int) game.pointsCount);
+        String pointsString = game.character.points + " points";
+        String speedString = "" + game.character.speed.x * 2 + " m/s";
+        String boostsString = game.character.boosts + " boosts";
         Paint p = new Paint();
-        float x = 20f;
-        float y = 100f;
         p.setColor(Color.RED);
-        p.setTextSize(100f);
-        canvas.drawText(s, x, y, p);
-        if (!game.pause) {
-            canvas.drawBitmap(pauseImage, pausePlayRect.left, pausePlayRect.top, null);
-        } else {
-            canvas.drawBitmap(playImage, pausePlayRect.left, pausePlayRect.top, null);
-        }
+        final float textSize = 100f;
+        final float space = 20f;
+        p.setTextSize(textSize);
+        float boostsY = game.sky.rect.bottom + textSize + space;
+        float pointsY = boostsY + textSize + space;
+        float speedY = pointsY + textSize + space;
+        canvas.drawText(boostsString, space, boostsY, p);
+        canvas.drawText(speedString, space, speedY, p);
+        canvas.drawText(pointsString, space, pointsY, p);
+    canvas.drawBitmap(pauseImage, pausePlayRect.left, pausePlayRect.top, null);
     }
 }
 
