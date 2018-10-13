@@ -62,10 +62,9 @@ class Menu {
         void apply() {
             switch (this.description) {
                 case "play":
-                    game.gameStart();
+                    game.pause = false;
                     break;
                 case "reset":
-                    game.gameOver();
                     game.gameStart();
                     break;
             }

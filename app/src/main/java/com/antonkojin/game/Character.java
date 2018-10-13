@@ -37,12 +37,10 @@ public class Character {
         this.image = BitmapFactory.decodeResource(game.context.getResources(), R.drawable.hero);
         this.skyFallImage = BitmapFactory.decodeResource(game.context.getResources(), R.drawable.hero_sky_fall);
         this.boostImage = BitmapFactory.decodeResource(game.context.getResources(), R.drawable.hero_boost);
-        int imageHeight = image.getHeight();
-        int imageWidth = image.getWidth();
         int bottom = game.worldBounds.height() / 2;
-        int top = bottom - imageHeight;
-        int left = game.worldBounds.width() / 2 - imageWidth / 2;
-        int right = left + imageWidth;
+        int top = bottom - image.getHeight();
+        int left = image.getWidth() * 2;
+        int right = left + image.getWidth();
         this.rect = new Rect(left, top, right, bottom);
         this.speed = new Point(initialXSpeed, 0);
     }
@@ -63,6 +61,7 @@ public class Character {
                 rect.offset(0, -game.worldBounds.height());
                 skyFall = true;
                 speed.y = skyFallSpeed;
+                boosts++;
             } else {
                 speed.y += gravity;
             }
@@ -108,6 +107,7 @@ public class Character {
         rect.offsetTo(rect.left, newTop);
         speed.x = initialXSpeed;
         speed.y = 0;
+        boosts = 10;
     }
 }
 

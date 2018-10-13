@@ -26,7 +26,6 @@ class Sky {
     public void draw(Canvas canvas) {
         canvas.drawBitmap(image, rect.left, rect.top, null);
         canvas.drawBitmap(image, rect.right, rect.top, null);
-        Log.d("", "" + rect.left + "\t" + rect.right + "\t" + game.worldBounds.width());
     }
 
     public void update() {

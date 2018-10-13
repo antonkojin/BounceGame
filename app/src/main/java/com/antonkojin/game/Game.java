@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.AbstractList;
@@ -24,6 +25,9 @@ public class Game {
     Menu menu;
     Background background;
     Sky sky;
+    long updateDeltaSeconds;
+    long renderDeltaSeconds;
+    private long targetFrameTime = second / 60;
 
     Game(Context context) {
         this.context = context;
@@ -57,6 +61,7 @@ public class Game {
 
 
     public void render(Canvas canvas) {
+        final long start = System.nanoTime();
         if (!pause) {
             background.draw(canvas);
             for (Baddie b: baddies) b.draw(canvas);
@@ -66,9 +71,12 @@ public class Game {
         } else {
             menu.draw(canvas);
         }
+        renderDeltaSeconds = (long)(double)(System.nanoTime() -  start) / targetFrameTime * 100;
+        Log.i("", "render: " + renderDeltaSeconds);
     }
 
     public void update() {
+        final long start = System.nanoTime();
         if (character.speed.x <= 0) {
             gameOver();
         }
@@ -80,6 +88,8 @@ public class Game {
             spawnBaddies();
 
         }
+        updateDeltaSeconds = (long)((double)(System.nanoTime() -  start) / targetFrameTime * 100);
+        Log.i("", "update: " + updateDeltaSeconds);
     }
 
     private void baddiesUpdate() {
@@ -89,8 +99,13 @@ public class Game {
             if (Rect.intersects(b.rect, character.rect)) {
                 dead = true;
                 character.points++;
-                character.speed.x += b.bounceXSpeedIncrease;
                 if (!character.skyFall) {
+                    final boolean isStopBaddie = b instanceof StopBaddie;
+                    if (isStopBaddie && character.boost) {
+                        character.speed.x += 0;
+                    } else {
+                        character.speed.x += b.bounceXSpeedIncrease;
+                    }
                     character.bounce(b.rect.top, b.bounceYSpeed);
                 }
             } else {
@@ -121,15 +136,21 @@ public class Game {
         if (spawnBombBaddie) {
             baddies.add(new BombBaddie(this));
         }
+
+        double stopBaddiesPerFrame = StopBaddie.spawnPerSpaceUnit * character.speed.x;
+        boolean spawnStopBaddie = r.nextDouble() <= stopBaddiesPerFrame * character.speed.x;
+        if (spawnStopBaddie) {
+            baddies.add(new StopBaddie(this));
+        }
     }
 
     void gameOver() {
-        baddies.clear();
-        character.reset();
         pause = true;
     }
 
     void gameStart() {
+        baddies.clear();
+        character.reset();
         pause = false;
     }
 }

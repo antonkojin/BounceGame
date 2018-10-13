@@ -39,7 +39,7 @@ public class SurfaceViewRunnable extends SurfaceView implements SurfaceHolder.Ca
         long waitTime;
         long totalTime = 0;
         long frameCount = 0;
-        long targetFPS = 60;
+        long targetFPS = 30;
         long targetTime = (1000000000 / targetFPS);
 
         while (running) {
@@ -68,6 +68,7 @@ public class SurfaceViewRunnable extends SurfaceView implements SurfaceHolder.Ca
             if (totalTime >= 1e9) {
                 long realFPS = frameCount;
                 // TODO
+                Log.i("", "FPS: " + realFPS);
                 frameCount = 0;
                 totalTime = 0;
             }
